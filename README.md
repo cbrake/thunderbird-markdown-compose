@@ -203,6 +203,13 @@ Three rules keep this project small:
    reliable way to turn a small add-on into a large one. If an option earns its
    place, it goes in `manifest.json` under `options_ui` and nowhere else.
 
+## Security
+
+The add-on holds one permission, `compose`, makes no network connections of its
+own, and treats pasted clipboard HTML and quoted messages as content someone
+else wrote. [SECURITY.md](SECURITY.md) records how that content is handled, what
+was checked, the limitations that are known, and where to report a vulnerability.
+
 ## Contributing
 
 Issues and pull requests are welcome. Small, focused changes are easiest to
