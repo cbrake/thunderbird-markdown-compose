@@ -35,7 +35,9 @@ the repository contents and install the `.xpi` from
 
 1. Open a compose window and write your message in Markdown.
 2. Click **Preview** in the compose toolbar to see the rendered HTML in a popup.
-   Close the popup and keep editing; your source text is untouched.
+   Close the popup and keep editing; your source text is untouched. On a reply,
+   the quoted message and your signature appear below the preview, shown as they
+   will be sent.
 3. Send as usual. The Markdown is converted to HTML on the way out.
 
 Your message body is not converted until you send. Drafts stay as Markdown
@@ -116,7 +118,7 @@ global scope. There is no bundler and no module graph.
 | `src/source.js`     | Recovers Markdown source from the compose editor's HTML.            |
 | `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.           |
 | `src/style.js`      | The inline stylesheet, as a map of tag name to CSS declarations.    |
-| `src/preview.*`     | The preview popup: two `<div>`s and a handful of lines of script.   |
+| `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.     |
 
 The interesting part is `render.js`, and it is deliberately boring. It takes a
 string and returns a string, which means it can be tested with a plain
