@@ -70,19 +70,19 @@ function renderMarkdown(source) {
  * @returns {string}
  */
 function placeholderFor(index) {
-  return `{{tb-markdown-${index}}}`;
+  return `{{markdown-compose-${index}}}`;
 }
 
 /**
  * Put preserved elements back into rendered HTML.
  *
  * @param {string} html Output of renderMarkdown().
- * @param {string[]} preserved Elements set aside by splitComposeBody().
+ * @param {string[]} preserved Elements set aside by segmentComposeBody().
  * @returns {string}
  */
 function restorePreserved(html, preserved) {
   return html.replace(
-    /\{\{tb-markdown-(\d+)\}\}/g,
+    /\{\{markdown-compose-(\d+)\}\}/g,
     (marker, index) => preserved[Number(index)] ?? marker,
   );
 }

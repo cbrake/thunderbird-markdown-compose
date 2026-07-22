@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "tb-markdown",
+  "name": "Markdown Compose",
   "version": "0.1.0",
   "description": "Write email in Markdown, preview it, and send it as HTML.",
   "author": "Cliff Brake",
   "browser_specific_settings": {
     "gecko": {
-      "id": "tb-markdown@bec-systems.com",
+      "id": "markdown-compose@bec-systems.com",
       "strict_min_version": "151.0"
     }
   },

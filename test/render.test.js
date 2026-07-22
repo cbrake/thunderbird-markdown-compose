@@ -65,7 +65,7 @@ test("leaves plain paragraphs alone", () => {
 
 test("carries a placeholder through rendering untouched", () => {
   const html = renderMarkdown(`Chart: ${placeholderFor(0)}`);
-  assert.match(html, /Chart: \{\{tb-markdown-0\}\}/);
+  assert.match(html, /Chart: \{\{markdown-compose-0\}\}/);
 });
 
 test("restores a preserved element into rendered output", () => {
@@ -78,12 +78,12 @@ test("restores several preserved elements in order", () => {
   const source = `${placeholderFor(0)}\n\ntext\n\n${placeholderFor(1)}`;
   const html = restorePreserved(renderMarkdown(source), ["<img src='a'>", "<img src='b'>"]);
   assert.ok(html.indexOf("<img src='a'>") < html.indexOf("<img src='b'>"));
-  assert.ok(!html.includes("tb-markdown-"));
+  assert.ok(!html.includes("markdown-compose-"));
 });
 
 test("leaves an unmatched placeholder alone rather than dropping content", () => {
   const html = restorePreserved(renderMarkdown(placeholderFor(3)), []);
-  assert.match(html, /\{\{tb-markdown-3\}\}/);
+  assert.match(html, /\{\{markdown-compose-3\}\}/);
 });
 
 test("a placeholder on its own line survives block rendering", () => {

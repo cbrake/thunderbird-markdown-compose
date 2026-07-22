@@ -1,4 +1,4 @@
-# tb-markdown
+# Markdown Compose
 
 Write email in Markdown in Thunderbird's normal compose window, preview the
 result, and send it as HTML.
