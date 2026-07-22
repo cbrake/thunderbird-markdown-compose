@@ -36,8 +36,8 @@ the repository contents and install the `.xpi` from
 1. Open a compose window and write your message in Markdown.
 2. Click **Preview** in the compose toolbar to see the rendered HTML in a popup.
    Close the popup and keep editing; your source text is untouched. On a reply,
-   the quoted message and your signature appear below the preview, shown as they
-   will be sent.
+   quoted messages and your signature appear in place, so the preview reads in
+   the order the message will.
 3. Send as usual. The Markdown is converted to HTML on the way out.
 
 Your message body is not converted until you send. Drafts stay as Markdown
@@ -98,9 +98,12 @@ typography.
   direction.
 - **Presentation without semantics.** Colors, fonts, and alignment in pasted
   content are discarded, because Markdown has no way to say them.
-- **Quoted text, forwards, and signatures.** Everything from the first quoted
-  block or signature onward is passed through unchanged and is not treated as
-  Markdown. A consequence is that text typed *below* a quote is not converted.
+- **Quoted text, forwards, and signatures.** Quoted blocks and signatures are
+  passed through unchanged and are not treated as Markdown. Text you write
+  around them is converted, whether it sits above, below, or on both sides.
+- **Replying inside a quote.** Point-by-point replies written *within* a quoted
+  block are part of that block, so they are passed through as typed. Nothing is
+  lost; it simply stays plain text.
 
 These are deliberate omissions. Each one avoids a class of bugs that would
 outweigh its value.
@@ -128,11 +131,16 @@ assertion runner and no Thunderbird instance:
 node --test
 ```
 
-On send, `background.js` receives the compose body from `onBeforeSend`, asks
-`source.js` to turn the editor's HTML back into the Markdown you typed
-(unwrapping paragraphs and line breaks, and splitting off any quoted reply or
-signature), hands that to `render.js`, and returns the rendered result for
-Thunderbird to send.
+On send, `background.js` receives the compose body from `onBeforeSend` and asks
+`source.js` to break it into segments. Each segment is either Markdown you
+wrote, recovered from the editor's HTML by unwrapping paragraphs and line
+breaks, or generated markup to pass through, such as a quoted reply or a
+signature. The Markdown segments go through `render.js`, the rest are left
+alone, and the pieces are reassembled in order for Thunderbird to send.
+
+Segments are what make the position of your text irrelevant: writing above a
+quote, below it, or on both sides is the same operation applied to a different
+number of segments.
 
 Styling is applied during rendering rather than as a post-processing pass:
 `render.js` hooks markdown-it's renderer and writes a `style` attribute onto

@@ -15,17 +15,11 @@
         color: #57606a;
         font-family: sans-serif;
       }
-      #quoted-label {
-        margin: 1.5em 0 0.5em;
-        padding-top: 1em;
-        border-top: 1px solid #d0d7de;
-        color: #57606a;
-        font-family: sans-serif;
-        font-size: 0.9em;
-      }
-      #quoted iframe {
+      iframe.pass-through {
+        display: block;
         width: 100%;
         height: 14em;
+        margin: 0.5em 0;
         border: 1px solid #d0d7de;
         border-radius: 4px;
         background: #fff;
@@ -35,8 +29,6 @@
   <body>
     <div id="message"></div>
     <div id="preview"></div>
-    <div id="quoted-label" hidden>Quoted message and signature, sent unchanged</div>
-    <div id="quoted"></div>
     <script src="../vendor/markdown-it.min.js"></script>
     <script src="style.js"></script>
     <script src="render.js"></script>

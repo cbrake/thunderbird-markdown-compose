@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Show the quoted reply and signature exactly as they will be sent.
+ * Build a frame holding markup that is sent exactly as it stands.
  *
  * This markup comes from whoever wrote the original message, and this popup can
  * reach the browser.* APIs, so it goes into a sandboxed frame rather than into
@@ -9,19 +9,26 @@
  * policy blocks remote loads, so a tracking pixel in a quoted message cannot
  * report that you opened the preview.
  *
- * @param {string} trailer Passed-through HTML from splitComposeBody().
+ * @param {string} html
+ * @returns {HTMLIFrameElement}
  */
-function showQuoted(trailer) {
-  if (!trailer.trim()) return;
-
+function passThroughFrame(html) {
   const frame = document.createElement("iframe");
+  frame.className = "pass-through";
   frame.setAttribute("sandbox", "");
   frame.srcdoc =
     `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; ` +
-    `img-src data:; style-src 'unsafe-inline'">${trailer}`;
+    `img-src data:; style-src 'unsafe-inline'">${html}`;
+  return frame;
+}
 
-  document.getElementById("quoted-label").hidden = false;
-  document.getElementById("quoted").appendChild(frame);
+/** Build a block of rendered Markdown. */
+function renderedBlock(markdown, preserved) {
+  const block = document.createElement("div");
+  // renderMarkdown escapes raw HTML in the source, and this is the author's own
+  // text, so this is the same markup that will be sent.
+  block.innerHTML = restorePreserved(renderMarkdown(markdown), preserved);
+  return block;
 }
 
 /** Show the current compose body as it will be sent. */
@@ -38,17 +45,20 @@ async function showPreview() {
     return;
   }
 
-  const { source, trailer, preserved } = splitComposeBody(details.body);
-
-  if (source) {
-    // renderMarkdown escapes raw HTML in the source, and the compose body is
-    // the author's own text, so this is the same markup that will be sent.
-    preview.innerHTML = restorePreserved(renderMarkdown(source), preserved);
-  } else {
+  const { segments, preserved } = segmentComposeBody(details.body);
+  if (!segments.some((segment) => segment.markdown)) {
     message.textContent = "Nothing to preview yet.";
   }
 
-  showQuoted(trailer);
+  // Segments are in document order, so writing above a quote, below it, or both
+  // previews the way the message will actually read.
+  for (const segment of segments) {
+    preview.appendChild(
+      segment.markdown
+        ? renderedBlock(segment.markdown, preserved)
+        : passThroughFrame(segment.html),
+    );
+  }
 }
 
 showPreview();

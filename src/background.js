@@ -15,10 +15,17 @@
  * @returns {string|null} The converted body, or null if there is nothing to do.
  */
 function convertComposeBody(bodyHtml) {
-  const { source, trailer, preserved } = splitComposeBody(bodyHtml);
-  if (!source) return null;
-  const rendered = restorePreserved(renderMarkdown(source), preserved);
-  return `<html><body>${rendered}${trailer}</body></html>`;
+  const { segments, preserved } = segmentComposeBody(bodyHtml);
+  if (!segments.some((segment) => segment.markdown)) return null;
+
+  const body = segments
+    .map((segment) =>
+      segment.markdown
+        ? restorePreserved(renderMarkdown(segment.markdown), preserved)
+        : segment.html,
+    )
+    .join("");
+  return `<html><body>${body}</body></html>`;
 }
 
 browser.compose.onBeforeSend.addListener((tab, details) => {

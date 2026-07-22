@@ -5,15 +5,19 @@
  *
  * The editor stores what you type as HTML: line breaks become `<br>`, lines may
  * be wrapped in `<div>`, and runs of spaces become non-breaking spaces. This
- * file undoes that, and separates the part of the message you wrote from the
+ * file undoes that, and separates the parts of the message you wrote from the
  * parts Thunderbird generated (quoted replies, forwards, signatures), which are
  * preserved exactly as they are.
+ *
+ * A message is treated as a sequence of segments rather than as a body followed
+ * by a quote, so it does not matter whether you write above the quoted message,
+ * below it, or both.
  *
  * Requires a DOM, so it runs in the background page and the preview popup but
  * not under `node --test`.
  */
 
-/** Content from the first match onward is passed through untouched. */
+/** Elements that are passed through untouched, along with their contents. */
 const PRESERVED_SELECTOR = [
   "blockquote[type=cite]",
   ".moz-cite-prefix",
@@ -83,33 +87,54 @@ function nodesToText(nodes, preserved) {
 }
 
 /**
- * Split a compose body into the Markdown you wrote and the generated HTML that
- * follows it.
+ * Split a compose body into alternating segments of your Markdown and of
+ * generated HTML to pass through.
+ *
+ * Each segment is either `{markdown: string}`, holding source you wrote, or
+ * `{html: string}`, holding markup to send exactly as it stands. They are in
+ * document order, so reassembling them in order rebuilds the message.
  *
  * Elements that Markdown cannot express, currently images, are replaced in the
- * source by a placeholder and returned alongside it. Pass the rendered HTML and
+ * source by a placeholder and collected in `preserved`. Pass rendered HTML and
  * that list to restorePreserved() to put them back.
  *
  * @param {string} bodyHtml The `body` field of a ComposeDetails object.
- * @returns {{source: string, trailer: string, preserved: string[]}}
+ * @returns {{segments: Array<{markdown?: string, html?: string}>,
+ *            preserved: string[]}}
  */
-function splitComposeBody(bodyHtml) {
+function segmentComposeBody(bodyHtml) {
   const doc = new DOMParser().parseFromString(bodyHtml, "text/html");
-  const children = Array.from(doc.body.childNodes);
-
-  const boundary = children.findIndex(
-    (node) =>
-      node.nodeType === node.ELEMENT_NODE && node.matches(PRESERVED_SELECTOR),
-  );
-  const split = boundary === -1 ? children.length : boundary;
   const preserved = [];
+  const segments = [];
+
+  const isPassThrough = (node) =>
+    node.nodeType === node.ELEMENT_NODE && node.matches(PRESERVED_SELECTOR);
+
+  // Group consecutive nodes of the same kind, so a quoted reply and the cite
+  // line above it stay together as one block to pass through.
+  for (const node of doc.body.childNodes) {
+    const passThrough = isPassThrough(node);
+    const last = segments[segments.length - 1];
+
+    if (last && last.passThrough === passThrough) {
+      last.nodes.push(node);
+    } else {
+      segments.push({ passThrough, nodes: [node] });
+    }
+  }
 
   return {
-    source: nodesToText(children.slice(0, split), preserved).trim(),
-    trailer: children
-      .slice(split)
-      .map((node) => node.outerHTML ?? node.textContent)
-      .join(""),
     preserved,
+    segments: segments.map((segment) => {
+      const html = segment.nodes
+        .map((node) => node.outerHTML ?? node.textContent)
+        .join("");
+      if (segment.passThrough) return { html };
+
+      // A run holding nothing but spacing is kept as it stands, so the blank
+      // line between your text and a quote survives.
+      const markdown = nodesToText(segment.nodes, preserved).trim();
+      return markdown ? { markdown } : { html };
+    }),
   };
 }
