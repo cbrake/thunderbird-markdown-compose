@@ -119,10 +119,6 @@ typography.
 - **Quoted text, forwards, and signatures.** Quoted blocks and signatures are
   passed through unchanged and are not treated as Markdown. Text you write
   around them is converted, whether it sits above, below, or on both sides.
-- **Replying inside a quote.** Point-by-point replies written *within* a quoted
-  block are part of that block, so they are passed through as typed. Nothing is
-  lost; it simply stays plain text. See [IDEAS.md](IDEAS.md) for what supporting
-  this would take.
 
 These are deliberate omissions. Each one avoids a class of bugs that would
 outweigh its value.
@@ -132,15 +128,15 @@ outweigh its value.
 The whole extension is seven small files, loaded as plain scripts sharing one
 global scope. There is no bundler and no module graph.
 
-| File                | Role                                                               |
-| ------------------- | ------------------------------------------------------------------ |
-| `manifest.json`     | Declares the compose action button and the `compose` permission.    |
-| `src/background.js` | Registers the toolbar button and the `compose.onBeforeSend` hook.   |
-| `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor.   |
-| `src/source.js`     | Recovers Markdown source from the compose editor's HTML.            |
-| `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.           |
-| `src/style.js`      | The inline stylesheet, plus the image width cap. No logic.          |
-| `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.     |
+| File                | Role                                                              |
+| ------------------- | ----------------------------------------------------------------- |
+| `manifest.json`     | Declares the compose action button and the `compose` permission.  |
+| `src/background.js` | Registers the toolbar button and the `compose.onBeforeSend` hook. |
+| `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor. |
+| `src/source.js`     | Recovers Markdown source from the compose editor's HTML.          |
+| `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.         |
+| `src/style.js`      | The inline stylesheet, plus the image width cap. No logic.        |
+| `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.  |
 
 The interesting part is `render.js`, and it is deliberately boring. It takes a
 string and returns a string, which means it can be tested with a plain
