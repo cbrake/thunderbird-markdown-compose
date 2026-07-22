@@ -74,6 +74,24 @@ A paste that carries no formatting is left to Thunderbird's ordinary plain text
 paste. That keeps copying a passage from one part of your own message to another
 from being escaped on the way through.
 
+## Image sizes
+
+An image is held to 600 pixels wide, and shrinks further on a window narrower
+than that. Images already smaller are left as they are.
+
+To choose a size yourself, give the image a title of its dimensions:
+
+    ![A device label](https://example.com/label.png "400x")
+
+The width alone is usually what you want, since the height then follows the
+aspect ratio. `"400x260"` sets both, and `"x260"` sets the height alone. A title
+that is anything else stays an ordinary tooltip.
+
+Markdown has no syntax of its own for this. The title is used because it is the
+only slot the parser already offers: the `=400x` convention stops markdown-it
+recognising the image at all, and Pandoc's `{width=400}` is left behind as stray
+text. Both would mean a parser extension for a feature this size.
+
 ## What is supported
 
 CommonMark plus GitHub-flavored tables, strikethrough, and autolinks, courtesy

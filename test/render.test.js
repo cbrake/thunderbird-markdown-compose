@@ -102,3 +102,29 @@ test("styles an image once", () => {
   const html = renderMarkdown("![alt](https://example.com/wide.png)");
   assert.equal(html.match(/height: auto/g).length, 1);
 });
+
+test("reads an image width from a title of dimensions", () => {
+  const html = renderMarkdown('![a](photo.png "400x")');
+  assert.match(html, /<img src="photo\.png" alt="a" width="400"/);
+  assert.ok(!html.includes("title="));
+  // An explicit width answers the question the default cap exists to answer.
+  assert.ok(!html.includes("min(100%"));
+});
+
+test("reads both dimensions, and leaves the height to the attribute", () => {
+  const html = renderMarkdown('![a](photo.png "400x260")');
+  assert.match(html, /width="400" height="260"/);
+  assert.ok(!html.includes("height: auto"));
+});
+
+test("reads a height on its own", () => {
+  const html = renderMarkdown('![a](photo.png "x260")');
+  assert.match(html, /<img src="photo\.png" alt="a" height="260"/);
+  assert.ok(!html.includes("width="));
+});
+
+test("leaves a title that is not a size alone", () => {
+  const html = renderMarkdown('![a](photo.png "Chart of results")');
+  assert.match(html, /title="Chart of results"/);
+  assert.match(html, /min\(100%, 600px\)/);
+});

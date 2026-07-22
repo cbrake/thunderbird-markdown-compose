@@ -45,6 +45,23 @@ const MARKDOWN_STYLES = {
   a: "color: #0969da;",
 };
 
+/**
+ * Styles for an image whose size the author set explicitly, keyed by which
+ * dimension was given.
+ *
+ * The MAX_IMAGE_WIDTH cap is gone from both, because someone who asked for a
+ * size has already answered the question the cap exists to answer.
+ * `max-width: 100%` stays, so the image still gives way to a narrow window
+ * rather than overflowing it.
+ */
+const MARKDOWN_SIZED_IMAGE_STYLES = {
+  // Only a width was asked for, so the height follows the aspect ratio.
+  width: "max-width: 100%; height: auto;",
+  // A height was asked for, and `height: auto` would override the attribute
+  // carrying it.
+  height: "max-width: 100%;",
+};
+
 /** Style applied to the wrapper element around the whole rendered message. */
 const MARKDOWN_BODY_STYLE =
   "font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif; font-size: 1em; line-height: 1.5;";
