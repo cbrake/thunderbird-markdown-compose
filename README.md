@@ -1,5 +1,7 @@
 # Markdown Compose
 
+<img src="icons/markdown-compose.svg" alt="" width="72" align="right">
+
 Write email in Markdown in Thunderbird's normal compose window, preview the
 result, and send it as HTML.
 
