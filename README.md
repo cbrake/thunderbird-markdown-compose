@@ -9,6 +9,9 @@ There is no separate editor, no sidebar, and no custom UI to learn. You type
 Markdown into the message body the way you always type, press a button to check
 how it looks, and Thunderbird sends the rendered HTML.
 
+_Disclaimer: This plugin was written with Claude Code. If you find this offensive,
+don't use it._
+
 ## Status
 
 Early. The extension does one thing, and the goal is to keep it that way.
@@ -199,16 +202,6 @@ Three rules keep this project small:
 3. **No configuration until someone needs it.** Preferences are the most
    reliable way to turn a small add-on into a large one. If an option earns its
    place, it goes in `manifest.json` under `options_ui` and nowhere else.
-
-## How this was written
-
-This add-on was written with [Claude Code](https://claude.com/claude-code),
-directed and reviewed line by line. Keeping it small is part of why: the whole
-extension is a few hundred lines, which is little enough to read end to end and
-judge on its merits.
-
-If you would rather not run software written this way, that is a fair position,
-and this note is here so you can decide before installing rather than after.
 
 ## Contributing
 
