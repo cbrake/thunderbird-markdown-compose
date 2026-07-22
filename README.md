@@ -208,7 +208,7 @@ Three rules keep this project small:
 The add-on holds one permission, `compose`, makes no network connections of its
 own, and treats pasted clipboard HTML and quoted messages as content someone
 else wrote. [SECURITY.md](SECURITY.md) records how that content is handled, what
-was checked, the limitations that are known, and where to report a vulnerability.
+was checked, and the limitations that are known.
 
 ## Contributing
 

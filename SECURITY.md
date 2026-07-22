@@ -4,13 +4,6 @@ This add-on runs inside a mail client, so it handles content written by people
 you have never met. This document records what it does with that content, what
 was checked, and what is known to be imperfect.
 
-## Reporting a vulnerability
-
-Please report privately to <cbrake@bec-systems.com> rather than in a public
-issue, and allow a little time for a fix before disclosure. A report that
-includes the message or clipboard content that triggers the problem is the
-fastest kind to act on.
-
 ## What the add-on can reach
 
 - **One permission: `compose`.** There are no host permissions, so the add-on
