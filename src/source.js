@@ -65,6 +65,11 @@ function declaredWidth(img) {
  * picks up MARKDOWN_STYLES.img so that the ones markdown-it renders and the
  * ones passed through here are laid out alike.
  *
+ * The width is set as an attribute rather than as CSS because Outlook renders
+ * mail through Word, which honours the attribute and ignores `max-width`. An
+ * image that arrives here declares its size, so unlike the ones markdown-it
+ * renders, there is a number to put in the attribute.
+ *
  * This governs display size only. The image is still sent at its full
  * resolution, so a large screenshot remains a large attachment.
  *

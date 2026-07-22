@@ -34,7 +34,9 @@ const markdownRenderer = (function createRenderer() {
 
   // A few token types have dedicated rules that bypass renderToken. Each of
   // them still emits the token's attributes, so styling them the same way works.
-  for (const rule of ["code_inline", "code_block", "fence", "image"]) {
+  // Images are absent deliberately: their rule ends by calling renderToken, so
+  // listing them here would apply the style a second time.
+  for (const rule of ["code_inline", "code_block", "fence"]) {
     const base = md.renderer.rules[rule];
     md.renderer.rules[rule] = (tokens, idx, options, env, self) => {
       applyStyle(tokens[idx]);

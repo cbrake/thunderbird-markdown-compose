@@ -90,3 +90,15 @@ test("a placeholder on its own line survives block rendering", () => {
   const html = restorePreserved(renderMarkdown(placeholderFor(0)), ["<img src='x'>"]);
   assert.match(html, /<p style="[^"]*"><img src='x'><\/p>/);
 });
+
+test("caps the width of an image named only by a URL", () => {
+  const html = renderMarkdown("![alt](https://example.com/wide.png)");
+  assert.match(html, /style="[^"]*max-width: min\(100%, 600px\)/);
+  // A client that cannot parse min() still has a declaration to fall back on.
+  assert.match(html, /style="max-width: 100%;/);
+});
+
+test("styles an image once", () => {
+  const html = renderMarkdown("![alt](https://example.com/wide.png)");
+  assert.equal(html.match(/height: auto/g).length, 1);
+});
