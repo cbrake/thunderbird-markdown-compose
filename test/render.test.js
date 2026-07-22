@@ -14,7 +14,7 @@ for (const file of ["vendor/markdown-it.min.js", "src/style.js", "src/render.js"
   const filename = path.join(__dirname, "..", file);
   vm.runInContext(fs.readFileSync(filename, "utf8"), context, { filename });
 }
-const { renderMarkdown } = context;
+const { renderMarkdown, placeholderFor, restorePreserved } = context;
 
 test("renders headings, emphasis, and links", () => {
   const html = renderMarkdown("# Title\n\nSome **bold** and a [link](https://example.com).");
@@ -61,4 +61,32 @@ test("wraps output in a styled container", () => {
 test("leaves plain paragraphs alone", () => {
   const html = renderMarkdown("Just a sentence.");
   assert.match(html, /<p style="[^"]*">Just a sentence\.<\/p>/);
+});
+
+test("carries a placeholder through rendering untouched", () => {
+  const html = renderMarkdown(`Chart: ${placeholderFor(0)}`);
+  assert.match(html, /Chart: \{\{tb-markdown-0\}\}/);
+});
+
+test("restores a preserved element into rendered output", () => {
+  const image = '<img src="data:image/png;base64,AAAA" alt="chart">';
+  const html = restorePreserved(renderMarkdown(`Chart: ${placeholderFor(0)}`), [image]);
+  assert.match(html, /<p style="[^"]*">Chart: <img src="data:image\/png;base64,AAAA" alt="chart"><\/p>/);
+});
+
+test("restores several preserved elements in order", () => {
+  const source = `${placeholderFor(0)}\n\ntext\n\n${placeholderFor(1)}`;
+  const html = restorePreserved(renderMarkdown(source), ["<img src='a'>", "<img src='b'>"]);
+  assert.ok(html.indexOf("<img src='a'>") < html.indexOf("<img src='b'>"));
+  assert.ok(!html.includes("tb-markdown-"));
+});
+
+test("leaves an unmatched placeholder alone rather than dropping content", () => {
+  const html = restorePreserved(renderMarkdown(placeholderFor(3)), []);
+  assert.match(html, /\{\{tb-markdown-3\}\}/);
+});
+
+test("a placeholder on its own line survives block rendering", () => {
+  const html = restorePreserved(renderMarkdown(placeholderFor(0)), ["<img src='x'>"]);
+  assert.match(html, /<p style="[^"]*"><img src='x'><\/p>/);
 });

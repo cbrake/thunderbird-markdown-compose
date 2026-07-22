@@ -61,6 +61,13 @@ URLs, images keep their sources, and headings, lists, tables, emphasis, and code
 blocks keep their structure. Presentation that Markdown cannot express, such as
 colors and font choices, is dropped.
 
+An image pasted as raw clipboard data, such as a screenshot, has no HTML around
+it and so arrives as an ordinary embedded image. Markdown has nowhere to put the
+attachment that Thunderbird builds from it, so the element is set aside during
+conversion and dropped back into the rendered output in the same position. You
+keep seeing the image in the compose window, and it is embedded in the sent
+message as usual.
+
 A paste that carries no formatting is left to Thunderbird's ordinary plain text
 paste. That keeps copying a passage from one part of your own message to another
 from being escaped on the way through.

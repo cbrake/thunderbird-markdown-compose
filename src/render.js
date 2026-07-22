@@ -60,3 +60,29 @@ function renderMarkdown(source) {
 
   return `<div style="${MARKDOWN_BODY_STYLE}">\n${html}</div>`;
 }
+
+/**
+ * The marker left in the Markdown source in place of an element that has to
+ * survive rendering untouched. Braces carry no meaning in Markdown, so the
+ * marker passes through the renderer as ordinary text.
+ *
+ * @param {number} index Position in the preserved list.
+ * @returns {string}
+ */
+function placeholderFor(index) {
+  return `{{tb-markdown-${index}}}`;
+}
+
+/**
+ * Put preserved elements back into rendered HTML.
+ *
+ * @param {string} html Output of renderMarkdown().
+ * @param {string[]} preserved Elements set aside by splitComposeBody().
+ * @returns {string}
+ */
+function restorePreserved(html, preserved) {
+  return html.replace(
+    /\{\{tb-markdown-(\d+)\}\}/g,
+    (marker, index) => preserved[Number(index)] ?? marker,
+  );
+}

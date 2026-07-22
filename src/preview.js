@@ -14,7 +14,7 @@ async function showPreview() {
     return;
   }
 
-  const { source } = splitComposeBody(details.body);
+  const { source, preserved } = splitComposeBody(details.body);
   if (!source) {
     message.textContent = "Nothing to preview yet.";
     return;
@@ -22,7 +22,7 @@ async function showPreview() {
 
   // renderMarkdown escapes raw HTML in the source, and the compose body is the
   // author's own text, so this is the same markup that will be sent.
-  preview.innerHTML = renderMarkdown(source);
+  preview.innerHTML = restorePreserved(renderMarkdown(source), preserved);
 }
 
 showPreview();

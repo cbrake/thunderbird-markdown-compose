@@ -37,7 +37,7 @@ const PARAGRAPH_TAGS = new Set(["P", "H1", "H2", "H3", "H4", "H5", "H6"]);
  * @param {Iterable<Node>} nodes
  * @returns {string}
  */
-function nodesToText(nodes) {
+function nodesToText(nodes, preserved) {
   let text = "";
 
   // Ensure the text ends with at least `count` newlines, so that a block
@@ -63,6 +63,14 @@ function nodesToText(nodes) {
       return;
     }
     if (tag === "STYLE" || tag === "SCRIPT") return;
+    if (tag === "IMG") {
+      // An image pasted from the clipboard arrives as a data: URI that
+      // Thunderbird turns into an embedded attachment on send. Markdown has
+      // nowhere to put that, so the element is set aside and dropped back into
+      // the rendered output afterwards.
+      text += placeholderFor(preserved.push(node.outerHTML) - 1);
+      return;
+    }
 
     const isBlock = BLOCK_TAGS.has(tag);
     if (isBlock) endLine(1);
@@ -78,8 +86,12 @@ function nodesToText(nodes) {
  * Split a compose body into the Markdown you wrote and the generated HTML that
  * follows it.
  *
+ * Elements that Markdown cannot express, currently images, are replaced in the
+ * source by a placeholder and returned alongside it. Pass the rendered HTML and
+ * that list to restorePreserved() to put them back.
+ *
  * @param {string} bodyHtml The `body` field of a ComposeDetails object.
- * @returns {{source: string, trailer: string}}
+ * @returns {{source: string, trailer: string, preserved: string[]}}
  */
 function splitComposeBody(bodyHtml) {
   const doc = new DOMParser().parseFromString(bodyHtml, "text/html");
@@ -90,12 +102,14 @@ function splitComposeBody(bodyHtml) {
       node.nodeType === node.ELEMENT_NODE && node.matches(PRESERVED_SELECTOR),
   );
   const split = boundary === -1 ? children.length : boundary;
+  const preserved = [];
 
   return {
-    source: nodesToText(children.slice(0, split)).trim(),
+    source: nodesToText(children.slice(0, split), preserved).trim(),
     trailer: children
       .slice(split)
       .map((node) => node.outerHTML ?? node.textContent)
       .join(""),
+    preserved,
   };
 }
