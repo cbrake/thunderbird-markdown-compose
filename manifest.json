@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "tb-markdown",
+  "version": "0.1.0",
+  "description": "Write email in Markdown, preview it, and send it as HTML.",
+  "author": "Cliff Brake",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tb-markdown@bec-systems.com",
+      "strict_min_version": "128.0"
+    }
+  },
+  "permissions": ["compose"],
+  "background": {
+    "scripts": [
+      "vendor/markdown-it.min.js",
+      "src/style.js",
+      "src/render.js",
+      "src/source.js",
+      "src/background.js"
+    ]
+  },
+  "compose_action": {
+    "default_title": "Preview Markdown",
+    "default_popup": "src/preview.html",
+    "default_icon": "icons/markdown.svg"
+  }
+}
