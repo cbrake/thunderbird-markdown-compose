@@ -103,7 +103,8 @@ typography.
   around them is converted, whether it sits above, below, or on both sides.
 - **Replying inside a quote.** Point-by-point replies written *within* a quoted
   block are part of that block, so they are passed through as typed. Nothing is
-  lost; it simply stays plain text.
+  lost; it simply stays plain text. See [IDEAS.md](IDEAS.md) for what supporting
+  this would take.
 
 These are deliberate omissions. Each one avoids a class of bugs that would
 outweigh its value.
