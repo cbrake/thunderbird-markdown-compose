@@ -26,9 +26,24 @@ const MARKDOWN_STYLES = {
   th: "padding: 0.4em 0.8em; border: 1px solid #d0d7de; background: #f6f8fa; text-align: left;",
   td: "padding: 0.4em 0.8em; border: 1px solid #d0d7de;",
   hr: "margin: 1.5em 0; border: 0; border-top: 1px solid #d0d7de;",
-  img: "max-width: 100%;",
+  img: "max-width: 100%; height: auto;",
   a: "color: #0969da;",
 };
+
+/**
+ * Widest an image is laid out in a sent message, in pixels.
+ *
+ * An image pasted from a web page or a screenshot tool often carries its full
+ * intrinsic size, which reads as enormous in a mail window. Wider images are
+ * given this as their `width` attribute; narrower ones are left alone, so a
+ * small logo is never blown up to fill the column.
+ *
+ * The attribute is set rather than a CSS width because Outlook renders mail
+ * through Word, which honours `width` but ignores `max-width`. The
+ * `max-width: 100%` in MARKDOWN_STYLES.img then shrinks the image further in
+ * clients that do understand it, when the window is narrower than this.
+ */
+const MAX_IMAGE_WIDTH = 600;
 
 /** Style applied to the wrapper element around the whole rendered message. */
 const MARKDOWN_BODY_STYLE =

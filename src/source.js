@@ -15,6 +15,9 @@
  *
  * Requires a DOM, so it runs in the background page and the preview popup but
  * not under `node --test`.
+ *
+ * Depends on the globals `MARKDOWN_STYLES` / `MAX_IMAGE_WIDTH` (src/style.js)
+ * and `placeholderFor` (src/render.js).
  */
 
 /** Elements that are passed through untouched, along with their contents. */
@@ -34,6 +37,58 @@ const BLOCK_TAGS = new Set([
 
 /** Tags that are followed by a blank line. */
 const PARAGRAPH_TAGS = new Set(["P", "H1", "H2", "H3", "H4", "H5", "H6"]);
+
+/**
+ * The width an image asks to be drawn at, or 0 if it does not say.
+ *
+ * The document here comes from DOMParser, which does not load images, so
+ * `naturalWidth` is unavailable and the element's own declarations are all
+ * there is to go on.
+ *
+ * @param {Element} img
+ * @returns {number}
+ */
+function declaredWidth(img) {
+  const attribute = Number.parseInt(img.getAttribute("width") ?? "", 10);
+  if (attribute > 0) return attribute;
+
+  const inline = /(?:^|;)\s*width\s*:\s*([\d.]+)px/i.exec(
+    img.getAttribute("style") ?? "",
+  );
+  return inline ? Math.round(Number(inline[1])) : 0;
+}
+
+/**
+ * Serialize an image at a size that suits a mail window.
+ *
+ * An image wider than MAX_IMAGE_WIDTH is brought down to it, and every image
+ * picks up MARKDOWN_STYLES.img so that the ones markdown-it renders and the
+ * ones passed through here are laid out alike.
+ *
+ * This governs display size only. The image is still sent at its full
+ * resolution, so a large screenshot remains a large attachment.
+ *
+ * @param {Element} img
+ * @returns {string} The element's HTML.
+ */
+function imageHtml(img) {
+  const copy = img.cloneNode(false);
+  let style = copy.getAttribute("style") ?? "";
+
+  if (declaredWidth(copy) > MAX_IMAGE_WIDTH) {
+    copy.setAttribute("width", String(MAX_IMAGE_WIDTH));
+    // A declared height would hold the original aspect ratio's pixel count and
+    // squash the image, and a declared width would win over the attribute.
+    copy.removeAttribute("height");
+    style = style.replace(/(?:^|;)\s*(?:width|height)\s*:[^;]*/gi, "");
+  }
+
+  copy.setAttribute(
+    "style",
+    `${style};${MARKDOWN_STYLES.img}`.replace(/^[;\s]+/, ""),
+  );
+  return copy.outerHTML;
+}
 
 /**
  * Convert a list of DOM nodes back to the plain text that was typed.
@@ -72,7 +127,7 @@ function nodesToText(nodes, preserved) {
       // Thunderbird turns into an embedded attachment on send. Markdown has
       // nowhere to put that, so the element is set aside and dropped back into
       // the rendered output afterwards.
-      text += placeholderFor(preserved.push(node.outerHTML) - 1);
+      text += placeholderFor(preserved.push(imageHtml(node)) - 1);
       return;
     }
 
