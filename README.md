@@ -13,7 +13,8 @@ Early. The extension does one thing, and the goal is to keep it that way.
 
 ## Requirements
 
-- Thunderbird 128 or later (MailExtensions, Manifest V3)
+- Thunderbird 151 or later (MailExtensions, Manifest V3). The floor is set by
+  the `compose_scripts` manifest key, which paste handling uses.
 - Compose window in HTML mode. This is Thunderbird's default; if you have set
   plain text as the default for an account, hold Shift while clicking Write to
   get an HTML composition.
@@ -37,8 +38,32 @@ the repository contents and install the `.xpi` from
    Close the popup and keep editing; your source text is untouched.
 3. Send as usual. The Markdown is converted to HTML on the way out.
 
-Nothing is converted until you send. Drafts stay as Markdown source, so you can
-close a draft and pick it up later without losing the original text.
+Your message body is not converted until you send. Drafts stay as Markdown
+source, so you can close a draft and pick it up later without losing the
+original text.
+
+## Pasting rich text
+
+Paste a formatted table, a link, or a styled article from a web page, and it
+arrives in the compose window as Markdown source rather than as styled HTML:
+
+    ## Q3 results
+
+    | Item | Qty |
+    | --- | --- |
+    | bolt | 4 |
+
+    See [the docs](https://example.com/docs).
+
+The conversion happens at the moment you paste, so what you see is what will be
+sent, and you can edit the result like anything else you typed. Links keep their
+URLs, images keep their sources, and headings, lists, tables, emphasis, and code
+blocks keep their structure. Presentation that Markdown cannot express, such as
+colors and font choices, is dropped.
+
+A paste that carries no formatting is left to Thunderbird's ordinary plain text
+paste. That keeps copying a passage from one part of your own message to another
+from being escaped on the way through.
 
 ## What is supported
 
@@ -59,8 +84,11 @@ typography.
   plain-text windows.
 - **Syntax highlighting in code blocks.** It would roughly triple the bundle
   size for a feature that most mail clients strip anyway.
-- **Round-tripping HTML back to Markdown.** Conversion runs once, at send time,
-  in one direction.
+- **Editing existing HTML mail as Markdown.** HTML becomes Markdown only when
+  you paste it. The message body itself is converted once, at send time, in one
+  direction.
+- **Presentation without semantics.** Colors, fonts, and alignment in pasted
+  content are discarded, because Markdown has no way to say them.
 - **Quoted text, forwards, and signatures.** Everything from the first quoted
   block or signature onward is passed through unchanged and is not treated as
   Markdown. A consequence is that text typed *below* a quote is not converted.
@@ -70,13 +98,14 @@ outweigh its value.
 
 ## How it works
 
-The whole extension is six small files, loaded as plain scripts sharing one
+The whole extension is seven small files, loaded as plain scripts sharing one
 global scope. There is no bundler and no module graph.
 
 | File                | Role                                                               |
 | ------------------- | ------------------------------------------------------------------ |
 | `manifest.json`     | Declares the compose action button and the `compose` permission.    |
 | `src/background.js` | Registers the toolbar button and the `compose.onBeforeSend` hook.   |
+| `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor.   |
 | `src/source.js`     | Recovers Markdown source from the compose editor's HTML.            |
 | `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.           |
 | `src/style.js`      | The inline stylesheet, as a map of tag name to CSS declarations.    |
@@ -102,12 +131,17 @@ each token from the map in `style.js`.
 
 ## Dependencies
 
-One: `markdown-it`, vendored into `vendor/` as a single file. It is checked into
-the repository rather than pulled at build time, because there is no build step
-and adding one would cost more than the file it saves.
+Three, all vendored into `vendor/` as single files and checked into the
+repository rather than pulled at build time, because there is no build step and
+adding one would cost more than the files it saves.
 
-To update it, replace `vendor/markdown-it.min.js` and record the version in
-`vendor/VERSION`.
+| Library                                                                | Used by      |
+| ---------------------------------------------------------------------- | ------------ |
+| [markdown-it](https://github.com/markdown-it/markdown-it)                | `render.js`  |
+| [turndown](https://github.com/mixmark-io/turndown)                       | `paste.js`   |
+| [turndown-plugin-gfm](https://github.com/mixmark-io/turndown-plugin-gfm) | `paste.js`   |
+
+To update one, replace the file and record the version in `vendor/VERSION`.
 
 ## Design notes
 

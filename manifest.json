@@ -7,7 +7,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "tb-markdown@bec-systems.com",
-      "strict_min_version": "128.0"
+      "strict_min_version": "151.0"
     }
   },
   "permissions": ["compose"],
@@ -20,6 +20,15 @@
       "src/background.js"
     ]
   },
+  "compose_scripts": [
+    {
+      "js": [
+        "vendor/turndown.js",
+        "vendor/turndown-plugin-gfm.js",
+        "src/paste.js"
+      ]
+    }
+  ],
   "compose_action": {
     "default_title": "Preview Markdown",
     "default_popup": "src/preview.html",
