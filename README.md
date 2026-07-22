@@ -27,9 +27,17 @@ Development install:
 2. In Thunderbird, open **Tools → Developer Tools → Debug Add-ons**.
 3. Choose **Load Temporary Add-on** and select `manifest.json`.
 
-The add-on is removed when Thunderbird restarts. For a permanent install, zip
-the repository contents and install the `.xpi` from
-**Add-ons Manager → Install Add-on From File**.
+The add-on is removed when Thunderbird restarts. For a permanent install, build
+the package:
+
+```sh
+make
+```
+
+That writes `build/markdown-compose-<version>.xpi`, which installs from
+**Add-ons Manager → Install Add-on From File**. The `.xpi` is an ordinary zip of
+the repository files; `make` only packages them, and `make clean` removes the
+build directory.
 
 ## Use
 
@@ -164,14 +172,14 @@ each token from the map in `style.js`.
 ## Dependencies
 
 Three, all vendored into `vendor/` as single files and checked into the
-repository rather than pulled at build time, because there is no build step and
-adding one would cost more than the files it saves.
+repository rather than fetched during packaging. Packaging is a zip and nothing
+more, and a dependency step would cost more than the files it saves.
 
-| Library                                                                | Used by      |
-| ---------------------------------------------------------------------- | ------------ |
-| [markdown-it](https://github.com/markdown-it/markdown-it)                | `render.js`  |
-| [turndown](https://github.com/mixmark-io/turndown)                       | `paste.js`   |
-| [turndown-plugin-gfm](https://github.com/mixmark-io/turndown-plugin-gfm) | `paste.js`   |
+| Library                                                                  | Used by     |
+| ------------------------------------------------------------------------ | ----------- |
+| [markdown-it](https://github.com/markdown-it/markdown-it)                | `render.js` |
+| [turndown](https://github.com/mixmark-io/turndown)                       | `paste.js`  |
+| [turndown-plugin-gfm](https://github.com/mixmark-io/turndown-plugin-gfm) | `paste.js`  |
 
 To update one, replace the file and record the version in `vendor/VERSION`.
 
