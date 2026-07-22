@@ -200,6 +200,16 @@ Three rules keep this project small:
    reliable way to turn a small add-on into a large one. If an option earns its
    place, it goes in `manifest.json` under `options_ui` and nowhere else.
 
+## How this was written
+
+This add-on was written with [Claude Code](https://claude.com/claude-code),
+directed and reviewed line by line. Keeping it small is part of why: the whole
+extension is a few hundred lines, which is little enough to read end to end and
+judge on its merits.
+
+If you would rather not run software written this way, that is a fair position,
+and this note is here so you can decide before installing rather than after.
+
 ## Contributing
 
 Issues and pull requests are welcome. Small, focused changes are easiest to
