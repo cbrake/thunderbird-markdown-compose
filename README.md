@@ -139,7 +139,7 @@ global scope. There is no bundler and no module graph.
 | `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor.   |
 | `src/source.js`     | Recovers Markdown source from the compose editor's HTML.            |
 | `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.           |
-| `src/style.js`      | The inline stylesheet, as a map of tag name to CSS declarations.    |
+| `src/style.js`      | The inline stylesheet, plus the image width cap. No logic.          |
 | `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.     |
 
 The interesting part is `render.js`, and it is deliberately boring. It takes a
