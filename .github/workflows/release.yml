@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run tests
+        run: make test
+
+      - name: Check tag matches manifest version
+        run: |
+          manifest_version=$(sed -n 's/^[[:space:]]*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' manifest.json)
+          tag_version=${GITHUB_REF_NAME#v}
+          if [ "$manifest_version" != "$tag_version" ]; then
+            echo "Tag $GITHUB_REF_NAME (version $tag_version) does not match manifest.json version $manifest_version" >&2
+            exit 1
+          fi
+
+      - name: Build XPI
+        run: make
+
+      - name: Extract release notes
+        run: |
+          notes=$(scripts/extract-changelog.sh "$GITHUB_REF_NAME")
+          if [ -z "$notes" ]; then
+            echo "No CHANGELOG.md section found for $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+          printf '%s\n' "$notes" > release-notes.md
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/*.xpi
+          body_path: release-notes.md
