@@ -31,6 +31,27 @@ function renderedBlock(markdown, preserved) {
   return block;
 }
 
+/**
+ * Reflect a window's on/off state on the toolbar button with a badge.
+ *
+ * The button icon itself cannot change to show state: Thunderbird only applies
+ * `context-fill` theming to manifest-declared action icons, so an icon set at
+ * runtime rasterises blank. A per-tab badge is themed by Thunderbird and shows
+ * on any toolbar, so a switched-off window is marked "off" instead.
+ *
+ * @param {number} tabId
+ * @param {boolean} active
+ */
+async function showBadge(tabId, active) {
+  await browser.composeAction.setBadgeText({ tabId, text: active ? "" : "off" });
+  if (!active) {
+    await browser.composeAction.setBadgeBackgroundColor({
+      tabId,
+      color: "#d73a49",
+    });
+  }
+}
+
 /** Show the current compose body as it will be sent. */
 async function showPreview() {
   const message = document.getElementById("message");
@@ -53,11 +74,8 @@ async function showPreview() {
     .catch(() => null);
   let active = !(state && state.active === false);
 
-  // Re-assert the toolbar icon from the authoritative flag, so it self-corrects.
-  await browser.composeAction.setIcon({
-    tabId: tab.id,
-    path: active ? "icons/markdown.svg" : "icons/markdown-off.svg",
-  });
+  // Re-assert the badge from the authoritative flag, so it self-corrects.
+  await showBadge(tab.id, active);
 
   toggle.hidden = false;
   toggleInput.checked = active;
@@ -92,10 +110,7 @@ async function showPreview() {
   toggleInput.addEventListener("change", async () => {
     active = toggleInput.checked;
     await browser.tabs.sendMessage(tab.id, { type: "mdc:set", active });
-    await browser.composeAction.setIcon({
-      tabId: tab.id,
-      path: active ? "icons/markdown.svg" : "icons/markdown-off.svg",
-    });
+    await showBadge(tab.id, active);
     draw();
   });
 

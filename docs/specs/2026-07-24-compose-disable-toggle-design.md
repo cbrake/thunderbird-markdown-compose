@@ -24,8 +24,7 @@ on-paste and on-send conversion, and show that state on the toolbar button.
   than move preview elsewhere and spend a `menus` permission, the one button
   keeps opening the preview popup, and the on/off control goes inside it.
 - **No new manifest permission and no new manifest scripts.** The design reuses
-  `composeAction` (button + icon), `runtime` messaging, and one added icon
-  asset.
+  `composeAction` (button + badge) and `runtime` messaging.
 
 ## Behavior
 
@@ -39,9 +38,13 @@ on-paste and on-send conversion, and show that state on the toolbar button.
   - The popup replaces the rendered preview with a single line: *"Conversion is
     off — this message will be sent as written."* (No value in rendering raw
     HTML you are already editing in WYSIWYG.)
-- The button **icon** reflects state: the solid Markdown mark when active, an
-  outline-only mark when disabled. This is clearer at a glance than a text badge
-  and needs no badge styling.
+- The button reflects state with a **badge**: an "off" badge on a red background
+  while the window is disabled, cleared when active. A badge rather than an icon
+  swap because Thunderbird applies `context-fill` theming only to
+  manifest-declared action icons; an icon set at runtime with `setIcon()`
+  rasterises blank (a regression present since Thunderbird 128). A badge is
+  themed by Thunderbird and shows on any toolbar. The manifest `default_icon`
+  stays in place and is never replaced.
 
 ## Source of truth: the compose script
 
@@ -74,15 +77,16 @@ other listener.
   before any conversion, so a disabled window falls through to the editor's
   native paste.
 
-### preview.js (popup — reads and writes the flag, swaps the icon)
+### preview.js (popup — reads and writes the flag, updates the badge)
 
 - On open, after resolving the compose tab (it already does this via
   `browser.tabs.query`), it messages the tab `mdc:get` and renders the checkbox
   and preview to match. Plain-text compositions keep their existing message and
   show no checkbox.
-- On toggle, it sends `mdc:set` to the compose tab, then swaps the button icon
-  with `browser.composeAction.setIcon({ tabId, path })` — solid when active,
-  outline when disabled — and re-renders the preview area.
+- On toggle, it sends `mdc:set` to the compose tab, then updates the button
+  badge with `browser.composeAction.setBadgeText({ tabId, text })` ("off" when
+  disabled, cleared when active) and re-renders the preview area. It also
+  re-asserts the badge on open, so it self-corrects.
 - If `mdc:get` cannot be reached, it defaults to active.
 
 ### background.js (send path — reads the flag)
@@ -95,21 +99,22 @@ other listener.
   Otherwise it converts as it does today. A compose script that cannot be
   reached defaults to converting, preserving current behavior.
 
-## Icon asset
+## Toolbar state: a badge, not an icon swap
 
-Add `icons/markdown-off.svg`: the same rounded rectangle and M-with-down-arrow
-as `icons/markdown.svg`, drawn as an outline (stroke, no solid fill) so it reads
-as hollow/white. It keeps `fill`/`stroke` set to `context-fill` so Thunderbird
-still themes it to the toolbar. The manifest `default_icon` stays the solid
-`icons/markdown.svg`; the outline variant is applied per-tab only while disabled.
+The button shows state with a per-tab badge, not by changing its icon. An icon
+set at runtime with `setIcon()` cannot be themed: Thunderbird supplies
+`context-fill` only to manifest-declared action icons, so a runtime SVG
+rasterises blank (a regression since Thunderbird 128). The badge, in contrast,
+is themed by Thunderbird and shows on any toolbar. `showBadge(tabId, active)`
+sets the text to "off" on a red background when disabled and clears it when
+active; the manifest `default_icon` (`icons/markdown.svg`) is never replaced.
 
 ## Files touched
 
 - `src/paste.js` — flag, message handler, paste early return.
-- `src/preview.js` — read/write flag, checkbox rendering, icon swap.
+- `src/preview.js` — read/write flag, checkbox rendering, badge update.
 - `src/preview.html` — checkbox markup and minimal styling.
 - `src/background.js` — query flag in `onBeforeSend`.
-- `icons/markdown-off.svg` — new outline icon.
 - `README.md` — a short "Disabling for a message" note.
 
 `src/render.js`, `src/style.js`, and `src/source.js` are untouched, so the pure,
@@ -121,7 +126,7 @@ Node-testable layer stays exactly as it is. `manifest.json` needs no change.
   plain text (`updateComposeAction`), so there is nothing to toggle.
 - **Pasting before disabling:** a paste made while active is already converted
   and cannot be un-converted after the fact. The author disables first; the
-  outline icon is the reminder. Noted in the README.
+  "off" badge is the reminder. Noted in the README.
 - **Compose script unreachable** (not yet injected, or an unexpected window):
   both the popup and `onBeforeSend` default to active/convert, matching today's
   behavior.
@@ -132,8 +137,8 @@ The changes are all browser-API and DOM glue, which this project already keeps
 out of the `node --test` suite (as it does for `paste.js` and `source.js`). No
 new Node tests. Verification is manual in Thunderbird:
 
-1. Load the temporary add-on; open a compose window; confirm the solid icon.
-2. Open the popup, uncheck the toggle; confirm the icon switches to outline.
+1. Load the temporary add-on; open a compose window; confirm no badge.
+2. Open the popup, uncheck the toggle; confirm the "off" badge appears.
 3. Paste rich text; confirm it stays rich (no Markdown flattening).
 4. Send; confirm the message arrives as written, not re-rendered.
 5. Re-check the toggle; confirm paste and send convert again.

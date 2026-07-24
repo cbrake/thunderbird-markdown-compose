@@ -59,7 +59,7 @@ as a downloaded release. The `.xpi` is an ordinary zip of the repository files;
 To send an ordinary rich-text message instead, open the preview popup and clear
 **Convert this message to HTML**. That switches the add-on off for this compose
 window: pastes keep their formatting and the message is sent exactly as written.
-The toolbar button shows a hollow icon while a window is switched off. Turn it
+The toolbar button shows an "off" badge while a window is switched off. Turn it
 off before pasting — a paste made while conversion is on is already turned into
 Markdown source and cannot be reversed by switching off afterward.
 

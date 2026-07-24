@@ -1,5 +1,12 @@
 # Per-window enable/disable toggle Implementation Plan
 
+> **Superseded detail (post-implementation):** the runtime toolbar icon swap
+> described below (Task 1's `icons/markdown-off.svg` and Task 4's `setIcon`
+> calls) was replaced with a per-tab "off" badge. Thunderbird themes
+> `context-fill` only for manifest-declared action icons, so an icon set at
+> runtime rasterises blank. The rest of the plan shipped as written. See the
+> design spec for the current approach.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Let the author disable Markdown conversion for a single compose window — both on paste and on send — toggled inside the preview popup and shown by swapping the toolbar-button icon.
