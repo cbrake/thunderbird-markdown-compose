@@ -9,8 +9,8 @@ There is no separate editor, no sidebar, and no custom UI to learn. You type
 Markdown into the message body the way you always type, press a button to check
 how it looks, and Thunderbird sends the rendered HTML.
 
-_Disclaimer: This plugin was written with Claude Code. If you find this offensive,
-don't use it._
+_Disclaimer: This plugin was written with Claude Code. If you find this
+offensive, don't use it._
 
 ## Status
 
@@ -26,23 +26,30 @@ Early. The extension does one thing, and the goal is to keep it that way.
 
 ## Install
 
-Development install:
+1. Download the `.xpi` from the
+   [latest release](https://github.com/cbrake/thunderbird-markdown-compose/releases/latest).
+2. In Thunderbird, open **Add-ons Manager** (**Tools → Add-ons and Themes**).
+3. Click the gear icon and choose **Install Add-on From File**, then select the
+   downloaded `.xpi`.
+
+### Development install
+
+To run from a checkout instead:
 
 1. Clone this repository.
 2. In Thunderbird, open **Tools → Developer Tools → Debug Add-ons**.
 3. Choose **Load Temporary Add-on** and select `manifest.json`.
 
-The add-on is removed when Thunderbird restarts. For a permanent install, build
-the package:
+The add-on is removed when Thunderbird restarts. To build the same package the
+releases ship:
 
 ```sh
 make
 ```
 
-That writes `build/markdown-compose-<version>.xpi`, which installs from
-**Add-ons Manager → Install Add-on From File**. The `.xpi` is an ordinary zip of
-the repository files; `make` only packages them, and `make clean` removes the
-build directory.
+That writes `build/markdown-compose-<version>.xpi`, which installs the same way
+as a downloaded release. The `.xpi` is an ordinary zip of the repository files;
+`make` only packages them, and `make clean` removes the build directory.
 
 ## Use
 
@@ -152,8 +159,8 @@ global scope. There is no bundler and no module graph.
 | `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.  |
 
 The interesting part is `render.js`, and it is deliberately boring. It takes a
-string and returns a string, which means it can be tested with a plain
-assertion runner and no Thunderbird instance:
+string and returns a string, which means it can be tested with a plain assertion
+runner and no Thunderbird instance:
 
 ```sh
 node --test
@@ -196,9 +203,8 @@ Three rules keep this project small:
    editing UI is out of scope.
 2. **Conversion is a pure function.** Anything that touches Thunderbird APIs
    stays in `background.js`, so the logic worth testing has no environment to
-   mock.
-   (`source.js` needs a DOM and therefore sits between the two; it is kept as
-   small as the job allows.)
+   mock. (`source.js` needs a DOM and therefore sits between the two; it is kept
+   as small as the job allows.)
 3. **No configuration until someone needs it.** Preferences are the most
    reliable way to turn a small add-on into a large one. If an option earns its
    place, it goes in `manifest.json` under `options_ui` and nowhere else.
