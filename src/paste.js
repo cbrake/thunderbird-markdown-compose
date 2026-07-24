@@ -33,6 +33,25 @@ const turndown = new TurndownService({
 turndown.use(turndownPluginGfm.gfm);
 
 /**
+ * Whether this compose window converts. The add-on can be stood down for a
+ * single message, and this flag is the source of truth for that window: a
+ * compose script lives exactly as long as its window, whereas the background
+ * event page may be terminated between events. The preview popup reads and
+ * writes it, and the send path reads it, through the messages below.
+ */
+let active = true;
+
+browser.runtime.onMessage.addListener((message) => {
+  if (message?.type === "mdc:get") {
+    return Promise.resolve({ active });
+  }
+  if (message?.type === "mdc:set") {
+    active = message.active !== false;
+    return Promise.resolve({ active });
+  }
+});
+
+/**
  * Convert clipboard HTML to Markdown source.
  *
  * @param {string} html The clipboard's `text/html` flavour.
@@ -71,6 +90,7 @@ function markdownToEditorHtml(markdown) {
 document.addEventListener(
   "paste",
   (event) => {
+    if (!active) return;
     const html = event.clipboardData?.getData("text/html");
     if (!html) return;
 
