@@ -28,10 +28,18 @@ function convertComposeBody(bodyHtml) {
   return `<html><body>${body}</body></html>`;
 }
 
-browser.compose.onBeforeSend.addListener((tab, details) => {
+browser.compose.onBeforeSend.addListener(async (tab, details) => {
   // The compose format of an open window cannot be changed, so a plain text
   // message is sent exactly as written.
   if (details.isPlainText) return {};
+
+  // The compose script owns the per-window on/off flag. A window that has been
+  // switched off is sent exactly as written. If the script cannot be reached,
+  // fall back to converting, which is the default behaviour.
+  const state = await browser.tabs
+    .sendMessage(tab.id, { type: "mdc:get" })
+    .catch(() => null);
+  if (state && state.active === false) return {};
 
   const body = convertComposeBody(details.body);
   return body ? { details: { body } } : {};
