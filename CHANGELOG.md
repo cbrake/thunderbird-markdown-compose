@@ -7,6 +7,15 @@ All notable changes to Markdown Compose are recorded here. The format follows
 The release workflow reads the section matching a pushed tag and uses it as the
 release notes, so each `## [x.y.z]` heading must match a `manifest.json` version.
 
+## [0.2.0]
+
+- Add a per-message switch to send an ordinary rich-text message: clear
+  **Convert this message to HTML** in the preview popup to turn conversion off
+  for that compose window. Pastes then keep their formatting and the message is
+  sent as written, and the toolbar button shows an "off" badge. Each new compose
+  window starts with conversion on.
+- Colour the compose toolbar button icon blue.
+
 ## [0.1.0]
 
 - Write email as Markdown in the ordinary compose window and send it as HTML.

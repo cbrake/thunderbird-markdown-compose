@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Compose",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Write email in Markdown, preview it, and send it as HTML.",
   "author": "Cliff Brake",
   "browser_specific_settings": {
