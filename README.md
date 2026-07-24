@@ -12,10 +12,6 @@ how it looks, and Thunderbird sends the rendered HTML.
 _Disclaimer: This plugin was written with Claude Code. If you find this
 offensive, don't use it._
 
-## Status
-
-Early. The extension does one thing, and the goal is to keep it that way.
-
 ## Requirements
 
 - Thunderbird 151 or later (MailExtensions, Manifest V3). The floor is set by
@@ -59,6 +55,13 @@ as a downloaded release. The `.xpi` is an ordinary zip of the repository files;
    quoted messages and your signature appear in place, so the preview reads in
    the order the message will.
 3. Send as usual. The Markdown is converted to HTML on the way out.
+
+To send an ordinary rich-text message instead, open the preview popup and clear
+**Convert this message to HTML**. That switches the add-on off for this compose
+window: pastes keep their formatting and the message is sent exactly as written.
+The toolbar button shows a hollow icon while a window is switched off. Turn it
+off before pasting — a paste made while conversion is on is already turned into
+Markdown source and cannot be reversed by switching off afterward.
 
 Your message body is not converted until you send. Drafts stay as Markdown
 source, so you can close a draft and pick it up later without losing the
