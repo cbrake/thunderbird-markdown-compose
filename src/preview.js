@@ -35,6 +35,8 @@ function renderedBlock(markdown, preserved) {
 async function showPreview() {
   const message = document.getElementById("message");
   const preview = document.getElementById("preview");
+  const toggle = document.getElementById("toggle");
+  const toggleInput = document.getElementById("toggle-input");
 
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   const details = await browser.compose.getComposeDetails(tab.id);
@@ -45,20 +47,53 @@ async function showPreview() {
     return;
   }
 
-  const { segments, preserved } = segmentComposeBody(details.body);
-  if (!segments.some((segment) => segment.markdown)) {
-    message.textContent = "Nothing to preview yet.";
-  }
+  // The compose script owns the flag; default to active if it cannot be reached.
+  const state = await browser.tabs
+    .sendMessage(tab.id, { type: "mdc:get" })
+    .catch(() => null);
+  let active = !(state && state.active === false);
 
-  // Segments are in document order, so writing above a quote, below it, or both
-  // previews the way the message will actually read.
-  for (const segment of segments) {
-    preview.appendChild(
-      segment.markdown
-        ? renderedBlock(segment.markdown, preserved)
-        : passThroughFrame(segment.html),
-    );
-  }
+  toggle.hidden = false;
+  toggleInput.checked = active;
+
+  // Redraw message and preview for the current state.
+  const draw = () => {
+    message.textContent = "";
+    preview.replaceChildren();
+
+    if (!active) {
+      message.textContent =
+        "Conversion is off — this message will be sent as written.";
+      return;
+    }
+
+    const { segments, preserved } = segmentComposeBody(details.body);
+    if (!segments.some((segment) => segment.markdown)) {
+      message.textContent = "Nothing to preview yet.";
+    }
+
+    // Segments are in document order, so writing above a quote, below it, or
+    // both previews the way the message will actually read.
+    for (const segment of segments) {
+      preview.appendChild(
+        segment.markdown
+          ? renderedBlock(segment.markdown, preserved)
+          : passThroughFrame(segment.html),
+      );
+    }
+  };
+
+  toggleInput.addEventListener("change", async () => {
+    active = toggleInput.checked;
+    await browser.tabs.sendMessage(tab.id, { type: "mdc:set", active });
+    await browser.composeAction.setIcon({
+      tabId: tab.id,
+      path: active ? "icons/markdown.svg" : "icons/markdown-off.svg",
+    });
+    draw();
+  });
+
+  draw();
 }
 
 showPreview();
