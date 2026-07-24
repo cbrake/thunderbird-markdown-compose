@@ -107,8 +107,10 @@ Deferred ideas live in `IDEAS.md` with enough context to pick up later; an idea
 that stays unclaimed there is evidence it was not needed. Prefer recording a
 possibility there over building it speculatively.
 
-## Design specs
+## Design specs and plans
 
 Design documents for planned work live in `docs/specs/`, named
-`YYYY-MM-DD-<topic>-design.md`. Write the spec there before implementing a
-non-trivial feature, and commit it alongside the change.
+`YYYY-MM-DD-<topic>-design.md`, and their implementation plans live in
+`docs/plans/`, named `YYYY-MM-DD-<topic>.md`. Write the spec (and, for
+non-trivial work, the plan) before implementing, and commit them alongside the
+change.
