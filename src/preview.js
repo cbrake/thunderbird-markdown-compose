@@ -53,6 +53,12 @@ async function showPreview() {
     .catch(() => null);
   let active = !(state && state.active === false);
 
+  // Re-assert the toolbar icon from the authoritative flag, so it self-corrects.
+  await browser.composeAction.setIcon({
+    tabId: tab.id,
+    path: active ? "icons/markdown.svg" : "icons/markdown-off.svg",
+  });
+
   toggle.hidden = false;
   toggleInput.checked = active;
 
