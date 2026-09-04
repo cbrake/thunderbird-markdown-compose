@@ -5,15 +5,16 @@ All notable changes to Markdown Compose are recorded here. The format follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 The release workflow reads the section matching a pushed tag and uses it as the
-release notes, so each `## [x.y.z]` heading must match a `manifest.json` version.
+release notes, so each `## [x.y.z]` heading must match a `manifest.json`
+version.
 
-## [0.3.0]
+## [0.3.0] - 2026-09-04
 
 - **Link selected text by pasting a URL over it** — select a phrase, paste a
   URL, and the phrase becomes the link text. Ctrl+Z restores the phrase, and a
   paste made with nothing selected is unchanged.
 
-## [0.2.0]
+## [0.2.0] - 2026-07-24
 
 - Add a per-message switch to send an ordinary rich-text message: clear
   **Convert this message to HTML** in the preview popup to turn conversion off
@@ -22,7 +23,7 @@ release notes, so each `## [x.y.z]` heading must match a `manifest.json` version
   window starts with conversion on.
 - Colour the compose toolbar button icon blue.
 
-## [0.1.0]
+## [0.1.0] - 2026-07-24
 
 - Write email as Markdown in the ordinary compose window and send it as HTML.
 - Convert pasted rich text to Markdown source on paste.
