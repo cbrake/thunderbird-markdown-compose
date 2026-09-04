@@ -9,8 +9,7 @@ There is no separate editor, no sidebar, and no custom UI to learn. You type
 Markdown into the message body the way you always type, press a button to check
 how it looks, and Thunderbird sends the rendered HTML.
 
-_Disclaimer: This plugin was written with Claude Code. If you find this
-offensive, don't use it._
+_Disclaimer: This plugin was written with Claude Code._
 
 ## Requirements
 
@@ -97,6 +96,20 @@ A paste that carries no formatting is left to Thunderbird's ordinary plain text
 paste. That keeps copying a passage from one part of your own message to another
 from being escaped on the way through.
 
+## Linking selected text
+
+Select a phrase, paste a URL over it, and the phrase becomes the link text:
+
+    See [the docs](https://example.com/docs).
+
+Ctrl+Z puts the phrase back, as it does for any other paste.
+
+The clipboard has to hold the URL and nothing else, which is what a browser's
+"Copy Link" gives you. A paste made with nothing selected is left alone, and so
+is one where the URL sits inside a longer passage. A bare URL needs no help in
+any case: it arrives as a link in the sent message whether or not it is written
+as one.
+
 ## Image sizes
 
 An image is held to 600 pixels wide, and shrinks further on a window narrower
@@ -148,7 +161,7 @@ outweigh its value.
 
 ## How it works
 
-The whole extension is seven small files, loaded as plain scripts sharing one
+The whole extension is eight small files, loaded as plain scripts sharing one
 global scope. There is no bundler and no module graph.
 
 | File                | Role                                                              |
@@ -157,6 +170,7 @@ global scope. There is no bundler and no module graph.
 | `src/background.js` | Registers the toolbar button and the `compose.onBeforeSend` hook. |
 | `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor. |
 | `src/source.js`     | Recovers Markdown source from the compose editor's HTML.          |
+| `src/link.js`       | Wraps a selection in a link when a URL is pasted.                 |
 | `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.         |
 | `src/style.js`      | The inline stylesheet, plus the image width cap. No logic.        |
 | `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.  |

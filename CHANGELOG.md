@@ -7,6 +7,12 @@ All notable changes to Markdown Compose are recorded here. The format follows
 The release workflow reads the section matching a pushed tag and uses it as the
 release notes, so each `## [x.y.z]` heading must match a `manifest.json` version.
 
+## [0.3.0]
+
+- **Link selected text by pasting a URL over it** — select a phrase, paste a
+  URL, and the phrase becomes the link text. Ctrl+Z restores the phrase, and a
+  paste made with nothing selected is unchanged.
+
 ## [0.2.0]
 
 - Add a per-message switch to send an ordinary rich-text message: clear

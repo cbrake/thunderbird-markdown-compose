@@ -8,8 +8,9 @@
  * way out. Pasting a styled table gives you a Markdown table you can edit,
  * and everything downstream stays unchanged.
  *
- * Depends on the globals `TurndownService` and `turndownPluginGfm`, which the
- * compose script declaration loads first.
+ * Depends on the globals `TurndownService` and `turndownPluginGfm`, and on
+ * `pastedUrl` / `linkMarkdown` from src/link.js, which the compose script
+ * declaration loads first.
  */
 
 /**
@@ -91,6 +92,19 @@ document.addEventListener(
   "paste",
   (event) => {
     if (!active) return;
+
+    // A URL pasted over a selection turns that selection into the link text.
+    // This runs first because a link copied from a browser also arrives as an
+    // <a> element in the text/html flavour, and the conversion below would
+    // insert that in place of the selection.
+    const url = pastedUrl(event.clipboardData?.getData("text/plain") ?? "");
+    const link = url && linkMarkdown(window.getSelection()?.toString() ?? "", url);
+    if (link) {
+      event.preventDefault();
+      document.execCommand("insertHTML", false, markdownToEditorHtml(link));
+      return;
+    }
+
     const html = event.clipboardData?.getData("text/html");
     if (!html) return;
 
