@@ -11,6 +11,24 @@ how it looks, and Thunderbird sends the rendered HTML.
 
 _Disclaimer: This plugin was written with Claude Code._
 
+## Features
+
+- **Write in Markdown, send HTML.** The compose body holds Markdown source and
+  is converted when you send. Drafts stay as Markdown.
+- **Preview** the rendered message in a popup without changing what you wrote.
+- **Paste rich text as Markdown.** Tables, links, lists, and headings from a web
+  page arrive as editable Markdown source.
+- **Link selected text** by pasting a URL over it.
+- **Markdown footer** placed above the quoted thread on new messages, replies,
+  and forwards.
+- **Top or bottom posting**, chosen per reply by whether you select a passage
+  first.
+- **Quotes, forwards, and signatures pass through unchanged**, wherever you
+  write around them.
+- **Styled for real mail clients**, with inline styles and Outlook-friendly
+  image sizes.
+- **Per-message off switch** to send ordinary rich text instead.
+
 ## Requirements
 
 - Thunderbird 151 or later (MailExtensions, Manifest V3). The floor is set by
