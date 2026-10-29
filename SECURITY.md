@@ -6,8 +6,9 @@ was checked, and what is known to be imperfect.
 
 ## What the add-on can reach
 
-- **One permission: `compose`.** There are no host permissions, so the add-on
-  cannot read your mail folders, your accounts, or any website.
+- **Two permissions: `compose` and `storage`.** `storage` holds the footer
+  and nothing else. There are no host permissions, so the add-on cannot read
+  your mail folders, your accounts, or any website.
 - **No network access of its own.** Nothing in `src/` opens a connection,
   and there is no telemetry, no update check, and no remote configuration.
   Everything it needs is in the package.

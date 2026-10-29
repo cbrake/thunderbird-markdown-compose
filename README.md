@@ -110,6 +110,34 @@ is one where the URL sits inside a longer passage. A bare URL needs no help in
 any case: it arrives as a link in the sent message whether or not it is written
 as one.
 
+## Footer
+
+To start each message with a footer, open **Tools → Add-ons and Themes**,
+choose **Markdown Compose**, and open its **Preferences**. Write the footer in
+Markdown; it saves as you type, and an empty footer means none.
+
+When you open a new message, reply, or forward, the footer is placed in the body
+as Markdown source, below where you write and above the quoted message, so a
+reader sees it before the earlier thread. On a new message it goes at the end.
+It is ordinary text from then on: edit it or delete it for that message as you
+like. A reopened draft keeps whatever footer it was saved with.
+
+## Top and bottom posting
+
+Both styles work, and you choose per reply:
+
+- **Top posting:** reply to the whole message. The cursor starts at the top,
+  and the footer sits below your text and above the quoted thread.
+- **Bottom posting:** select the passage you are answering, then reply.
+  Thunderbird quotes only that passage, and the cursor and footer start below
+  it, so your answer reads after the lines it responds to.
+
+The layout is only a starting point. Text you write above a quote, below it, or
+on both sides is converted the same way when you send.
+
+Thunderbird's own signature stays where your account settings put it. To use
+the footer in its place, clear the signature in **Account Settings**.
+
 ## Image sizes
 
 An image is held to 600 pixels wide, and shrinks further on a window narrower
@@ -161,19 +189,21 @@ outweigh its value.
 
 ## How it works
 
-The whole extension is eight small files, loaded as plain scripts sharing one
+The whole extension is ten small files, loaded as plain scripts sharing one
 global scope. There is no bundler and no module graph.
 
 | File                | Role                                                              |
 | ------------------- | ----------------------------------------------------------------- |
-| `manifest.json`     | Declares the compose action button and the `compose` permission.  |
+| `manifest.json`     | Declares the toolbar button, options page, and permissions.       |
 | `src/background.js` | Registers the toolbar button and the `compose.onBeforeSend` hook. |
 | `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor. |
 | `src/source.js`     | Recovers Markdown source from the compose editor's HTML.          |
 | `src/link.js`       | Wraps a selection in a link when a URL is pasted.                 |
+| `src/footer.js`     | Places the footer and cursor when a compose window opens.         |
 | `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.         |
 | `src/style.js`      | The inline stylesheet, plus the image width cap. No logic.        |
 | `src/preview.*`     | The preview popup, including the sandboxed quoted-message frame.  |
+| `src/options.*`     | The options page, where the footer is written.                    |
 
 The interesting part is `render.js`, and it is deliberately boring. It takes a
 string and returns a string, which means it can be tested with a plain assertion
@@ -228,9 +258,9 @@ Three rules keep this project small:
 
 ## Security
 
-The add-on holds one permission, `compose`, makes no network connections of its
-own, and treats pasted clipboard HTML and quoted messages as content someone
-else wrote. [SECURITY.md](SECURITY.md) records how that content is handled, what
+The add-on holds two permissions, `compose` and `storage` (for the footer),
+makes no network connections of its own, and treats pasted clipboard HTML and
+quoted messages as content someone else wrote. [SECURITY.md](SECURITY.md) records how that content is handled, what
 was checked, and the limitations that are known.
 
 ## Contributing

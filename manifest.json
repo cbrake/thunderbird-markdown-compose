@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Compose",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "Write email in Markdown, preview it, and send it as HTML.",
   "author": "Cliff Brake",
   "browser_specific_settings": {
@@ -14,7 +14,7 @@
     "48": "icons/markdown-compose.svg",
     "96": "icons/markdown-compose.svg"
   },
-  "permissions": ["compose"],
+  "permissions": ["compose", "storage"],
   "background": {
     "scripts": [
       "vendor/markdown-it.min.js",
@@ -30,10 +30,14 @@
         "vendor/turndown.js",
         "vendor/turndown-plugin-gfm.js",
         "src/link.js",
-        "src/paste.js"
+        "src/paste.js",
+        "src/footer.js"
       ]
     }
   ],
+  "options_ui": {
+    "page": "src/options.html"
+  },
   "compose_action": {
     "default_title": "Preview Markdown",
     "default_popup": "src/preview.html",

@@ -8,6 +8,19 @@ The release workflow reads the section matching a pushed tag and uses it as the
 release notes, so each `## [x.y.z]` heading must match a `manifest.json`
 version.
 
+## [0.4.1] - 2026-10-29
+
+- **Top and bottom posting** — reply to the whole message to write above the
+  quote, or select a passage and reply to write below it. The cursor and footer
+  start in the matching place.
+
+## [0.4.0] - 2026-10-29
+
+- **Markdown footer above the quoted message** — write a footer in Markdown in
+  the add-on's preferences, and each new message, reply, and forward starts
+  with it below your text and above the earlier thread, ready to edit or
+  remove.
+
 ## [0.3.0] - 2026-09-04
 
 - **Link selected text by pasting a URL over it** — select a phrase, paste a

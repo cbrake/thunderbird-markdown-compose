@@ -45,6 +45,32 @@ browser.compose.onBeforeSend.addListener(async (tab, details) => {
   return body ? { details: { body } } : {};
 });
 
+/** Compositions that are laid out when they open. */
+const LAYOUT_TYPES = new Set(["new", "reply", "forward"]);
+
+/**
+ * How a compose window that has just opened should be laid out, or null to
+ * leave it alone.
+ *
+ * Asked by the compose script when its window opens. A draft is skipped
+ * because it was saved already laid out, with the footer in it if you kept it.
+ *
+ * @returns {Promise<{footer: string}|null>}
+ */
+async function layoutFor(tabId) {
+  const details = await browser.compose.getComposeDetails(tabId);
+  if (details.isPlainText || !LAYOUT_TYPES.has(details.type)) return null;
+
+  const { footer = "" } = await browser.storage.local.get("footer");
+  return { footer: footer.trim() };
+}
+
+browser.runtime.onMessage.addListener((message, sender) => {
+  if (message?.type === "mdc:layout" && sender.tab) {
+    return layoutFor(sender.tab.id);
+  }
+});
+
 /** Markdown conversion only applies to HTML compositions; show that in the UI. */
 async function updateComposeAction(tabId) {
   try {

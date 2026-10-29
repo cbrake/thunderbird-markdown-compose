@@ -37,16 +37,22 @@ context list in `test/render.test.js` if the tests need it.**
 
 Two independent contexts:
 
-- **Compose script** (`vendor/turndown*`, `src/paste.js`) runs inside the
-  compose editor document. It has no `browser.compose` access and exists only to
-  turn pasted rich text into Markdown source at the moment of the paste.
+- **Compose script** (`vendor/turndown*`, `src/link.js`, `src/paste.js`,
+  `src/footer.js`) runs inside the compose editor document. It has no
+  `browser.compose` access. It turns pasted rich text into Markdown source at
+  the moment of the paste, and inserts the footer when the window opens.
 - **Background event page** (`vendor/markdown-it.min.js`, `src/style.js`,
   `src/render.js`, `src/source.js`, `src/background.js`) holds the toolbar
   button and the `compose.onBeforeSend` hook. It is an event page and may be
   restarted between events, so every listener is registered at the top level.
 
 The preview popup (`src/preview.*`) loads the same rendering scripts as the
-background page and renders the compose body without modifying it.
+background page and renders the compose body without modifying it. The options
+page (`src/options.*`) holds the one preference, a Markdown footer in
+`browser.storage.local`. `footer.js` asks the background for it with
+`mdc:layout`, because only the background can read the composition type and
+so skip drafts. `footer.js` also moves the cursor and footer below the quote
+when a reply quotes a selection.
 
 ### The send path
 

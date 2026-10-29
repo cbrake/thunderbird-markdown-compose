@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Markdown Compose options</title>
+    <style>
+      body {
+        max-width: 42em;
+        margin: 0;
+        padding: 1em;
+        font-family: sans-serif;
+        color: #24292f;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.25em;
+      }
+      p.hint {
+        margin: 0 0 0.5em;
+        font-size: 0.9em;
+        color: #57606a;
+      }
+      textarea {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 8em;
+        font-family: monospace;
+      }
+      #preview {
+        margin-top: 0.75em;
+        padding: 0 1em;
+        border: 1px solid #d0d7de;
+        border-radius: 4px;
+        background: #fff;
+      }
+      #preview:empty {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="footer">Footer</label>
+    <p class="hint">
+      Written in Markdown and placed in each new message, reply, and forward
+      when it opens, above any quoted message, where you can edit or delete it.
+      Leave it empty for no footer.
+    </p>
+    <textarea id="footer" spellcheck="false"></textarea>
+    <div id="preview"></div>
+    <script src="../vendor/markdown-it.min.js"></script>
+    <script src="style.js"></script>
+    <script src="render.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
