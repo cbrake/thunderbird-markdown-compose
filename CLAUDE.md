@@ -37,8 +37,8 @@ context list in `test/render.test.js` if the tests need it.**
 
 Two independent contexts:
 
-- **Compose script** (`vendor/turndown*`, `src/link.js`, `src/paste.js`,
-  `src/footer.js`) runs inside the compose editor document. It has no
+- **Compose script** (`vendor/turndown*`, `src/link.js`, `src/emphasis.js`,
+  `src/paste.js`, `src/footer.js`) runs inside the compose editor document. It has no
   `browser.compose` access. It turns pasted rich text into Markdown source at
   the moment of the paste, and inserts the footer when the window opens.
 - **Background event page** (`vendor/markdown-it.min.js`, `src/style.js`,

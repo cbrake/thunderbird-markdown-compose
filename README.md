@@ -128,6 +128,13 @@ is one where the URL sits inside a longer passage. A bare URL needs no help in
 any case: it arrives as a link in the sent message whether or not it is written
 as one.
 
+## Bold and italic
+
+Ctrl+B wraps the selection in `**`, and Ctrl+I wraps it in `_`. Pressing the
+same shortcut on a wrapped selection removes the markers, and with nothing
+selected you get an empty pair with the cursor between them. A selection that
+spans lines is left alone.
+
 ## Footer
 
 To start each message with a footer, open **Tools → Add-ons and Themes**,
@@ -207,7 +214,7 @@ outweigh its value.
 
 ## How it works
 
-The whole extension is ten small files, loaded as plain scripts sharing one
+The whole extension is eleven small files, loaded as plain scripts sharing one
 global scope. There is no bundler and no module graph.
 
 | File                | Role                                                              |
@@ -217,6 +224,7 @@ global scope. There is no bundler and no module graph.
 | `src/paste.js`      | Converts pasted rich text to Markdown, inside the compose editor. |
 | `src/source.js`     | Recovers Markdown source from the compose editor's HTML.          |
 | `src/link.js`       | Wraps a selection in a link when a URL is pasted.                 |
+| `src/emphasis.js`   | Wraps a selection in bold or italic for Ctrl+B and Ctrl+I.        |
 | `src/footer.js`     | Places the footer and cursor when a compose window opens.         |
 | `src/render.js`     | Markdown source in, HTML string out. No Thunderbird APIs.         |
 | `src/style.js`      | The inline stylesheet, plus the image width cap. No logic.        |

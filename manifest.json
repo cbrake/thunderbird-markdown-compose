@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Compose",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Write email in Markdown, preview it, and send it as HTML.",
   "author": "Cliff Brake",
   "browser_specific_settings": {
@@ -30,6 +30,7 @@
         "vendor/turndown.js",
         "vendor/turndown-plugin-gfm.js",
         "src/link.js",
+        "src/emphasis.js",
         "src/paste.js",
         "src/footer.js"
       ]

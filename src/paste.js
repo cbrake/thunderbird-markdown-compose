@@ -9,7 +9,8 @@
  * and everything downstream stays unchanged.
  *
  * Depends on the globals `TurndownService` and `turndownPluginGfm`, and on
- * `pastedUrl` / `linkMarkdown` from src/link.js, which the compose script
+ * `pastedUrl` / `linkMarkdown` from src/link.js and `EMPHASIS_MARKERS` /
+ * `emphasisMarkdown` from src/emphasis.js, which the compose script
  * declaration loads first.
  */
 
@@ -115,6 +116,45 @@ document.addEventListener(
     // execCommand keeps the paste on the editor's undo stack, so Ctrl+Z
     // behaves the way it does for any other paste.
     document.execCommand("insertHTML", false, markdownToEditorHtml(markdown));
+  },
+  true,
+);
+
+/**
+ * Ctrl+B and Ctrl+I write Markdown emphasis instead of applying the editor's
+ * own bold and italic, which the send path would drop. See src/emphasis.js.
+ */
+document.addEventListener(
+  "keydown",
+  (event) => {
+    if (!active) return;
+    if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) {
+      return;
+    }
+    const marker = EMPHASIS_MARKERS[event.key.toLowerCase()];
+    if (!marker) return;
+
+    // Stop Thunderbird's key binding from also applying the formatting.
+    event.preventDefault();
+    event.stopPropagation();
+
+    const selection = window.getSelection();
+    if (!selection) return;
+
+    // With nothing selected, an empty pair goes in and the cursor sits
+    // between the markers, ready to type.
+    if (selection.isCollapsed) {
+      document.execCommand("insertText", false, marker + marker);
+      for (let i = 0; i < marker.length; i++) {
+        selection.modify("move", "backward", "character");
+      }
+      return;
+    }
+
+    const replacement = emphasisMarkdown(selection.toString(), marker);
+    if (replacement === null) return;
+    // execCommand keeps the change on the editor's undo stack.
+    document.execCommand("insertText", false, replacement);
   },
   true,
 );

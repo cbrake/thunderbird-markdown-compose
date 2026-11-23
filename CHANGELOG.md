@@ -8,6 +8,11 @@ The release workflow reads the section matching a pushed tag and uses it as the
 release notes, so each `## [x.y.z]` heading must match a `manifest.json`
 version.
 
+## [0.5.0] - 2026-11-23
+
+- **Ctrl+B and Ctrl+I write Markdown** — the shortcuts wrap the selection in
+  `**` or `_`, and pressing one again on wrapped text removes the markers.
+
 ## [0.4.2] - 2026-11-23
 
 - **Reopened drafts send as formatted mail** — a message saved as a draft and
