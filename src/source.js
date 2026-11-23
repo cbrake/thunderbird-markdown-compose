@@ -112,11 +112,26 @@ function nodesToText(nodes, preserved) {
     text += "\n".repeat(Math.max(0, count - trailing));
   };
 
+  // Inside <pre>, whitespace is content and is kept as it stands.
+  let preDepth = 0;
+
   const walk = (node) => {
     if (node.nodeType === node.TEXT_NODE) {
+      let value = node.nodeValue;
+      if (preDepth === 0) {
+        // Whitespace is read the way the editor displays it. A saved draft
+        // comes back with its long lines wrapped and indented, and those
+        // newlines and spaces are formatting, not typed text: a line you
+        // typed ends in <br>. Read literally, the indent would turn each
+        // paragraph after a blank line into a Markdown code block.
+        value = value.replace(/[ \t\n\r\f]+/g, " ");
+        if (text.length === 0 || text.endsWith("\n")) {
+          value = value.replace(/^ /, "");
+        }
+      }
       // The editor writes non-breaking spaces for leading and repeated
       // spaces, which would otherwise break Markdown indentation.
-      text += node.nodeValue.replace(/\u00a0/g, " ");
+      text += value.replace(/\u00a0/g, " ");
       return;
     }
     if (node.nodeType !== node.ELEMENT_NODE) return;
@@ -137,8 +152,11 @@ function nodesToText(nodes, preserved) {
     }
 
     const isBlock = BLOCK_TAGS.has(tag);
+    const isPre = tag === "PRE";
     if (isBlock) endLine(1);
+    if (isPre) preDepth++;
     for (const child of node.childNodes) walk(child);
+    if (isPre) preDepth--;
     if (isBlock) endLine(PARAGRAPH_TAGS.has(tag) ? 2 : 1);
   };
 

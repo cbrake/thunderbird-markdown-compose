@@ -8,6 +8,12 @@ The release workflow reads the section matching a pushed tag and uses it as the
 release notes, so each `## [x.y.z]` heading must match a `manifest.json`
 version.
 
+## [0.4.2] - 2026-11-23
+
+- **Reopened drafts send as formatted mail** — a message saved as a draft and
+  edited again now renders its Markdown on send instead of arriving as plain
+  text.
+
 ## [0.4.1] - 2026-10-29
 
 - **Top and bottom posting** — reply to the whole message to write above the
